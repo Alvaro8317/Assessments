@@ -2,8 +2,10 @@ import requests
 import boto3
 from datetime import date
 from pharmacies import Pharmacies
-from utils import save_in_tmp_folder, convert_medicines, upload_file_to_s3, styles
+from utils import save_in_tmp_folder, convert_medicines, upload_file_to_s3, send_message_to_sqs, encrypt_url, encode_url, styles
 s3_client = boto3.client('s3')
+kms_client = boto3.client('kms', region_name='us-east-1')
+sqs_client = boto3.client('sqs')
 
 
 def lambda_handler(event, context):
@@ -12,7 +14,7 @@ def lambda_handler(event, context):
     notes = event['body']['additionalNotes']
     today = date.today()
     format_medicines = convert_medicines(medicines)
-    
+
     html_content = """<!DOCTYPE html>
     <html lang="es">
     <html>
@@ -25,25 +27,25 @@ def lambda_handler(event, context):
         </style>
     </head>
     <body>
-      <h1>Receta Médica</h1>
-      
-      <div class="patient-info">
-          <p>Nombre del Paciente: <strong>{}</strong></p>
-          <p>EPS: <strong>HOSPITALITO</strong></p>
-          <p>Fecha: <strong>{}</strong></p>
-      </div>
-      
-      <h2>Medicamentos Recetados</h2>
-      <div class="medicine-list">
-          <ul>
-              {}
-          </ul>
-      </div>
-      
-      <h3>Notas del Médico</h3>
-      <div class="doctor-notes">
-          <p>{}</p>
-      </div>
+    <h1>Receta Médica</h1>
+    
+    <div class="patient-info">
+        <p>Nombre del Paciente: <strong>{}</strong></p>
+        <p>EPS: <strong>HOSPITALITO</strong></p>
+        <p>Fecha: <strong>{}</strong></p>
+    </div>
+    
+    <h2>Medicamentos Recetados</h2>
+    <div class="medicine-list">
+        <ul>
+            {}
+        </ul>
+    </div>
+    
+    <h3>Notas del Médico</h3>
+    <div class="doctor-notes">
+        <p>{}</p>
+    </div>
     </body>
     </html>
     """.format(styles, patient, today, format_medicines, notes)
@@ -58,23 +60,34 @@ def lambda_handler(event, context):
         'Content-Type': 'text/html',
     }
     if (event['body']['sendToPharmacy'] == True):
-        medical_formula_to_send = 
+        print('Sending to pharmacy')
         pharmacy = event['body']['nameOfPharmacy']
+        payload_to_pharmacy = {
+            "INFO": f"The patient {patient} received a new medical formula, please prepare his respective medical formula"
+        }
+        payload_sqs = {
+            "Name": patient,
+            "URL": encode_url(encrypt_url(client_boto3=kms_client, url=url))
+        }
+        sended_to_a_pharmacy = False
+        message_from_pharmacy = "Doesn't exist that pharmacy"
+        url_queue = None
         match pharmacy:
-            case Pharmacies.SALUDPLUS:
-                response = requests.post(Pharmacies.SALUDPLUS.value, )
-                print(response)
+            case Pharmacies.SALUDPLUS.name:
+                url_queue = "https://sqs.us-east-1.amazonaws.com/648254270796/SALUDPLUS"
+                print("Sending information to saludplus")
+                message_from_pharmacy = requests.post(
+                    Pharmacies.SALUDPLUS.value, payload_to_pharmacy)
+                sended_to_a_pharmacy = True
+                send_message_to_sqs(client_sqs=sqs_client, message=payload_sqs, url_sqs=url_queue)
             case Pharmacies.VITALCARE:
                 pass
             case Pharmacies.BIENESTARTOTAL:
                 pass
+            case _:
+                print(message_from_pharmacy)
     return {
         'statusCode': 200,
         'headers': headers,
-        'body': {"message": "Generated successfully", "URL": url}
+        'body': {"message": "Generated successfully", "URL": url, "Sended to a pharmacy": sended_to_a_pharmacy}
     }
-
-
-
-
-

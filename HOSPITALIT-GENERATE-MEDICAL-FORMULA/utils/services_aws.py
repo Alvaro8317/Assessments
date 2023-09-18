@@ -1,4 +1,7 @@
+import json
 from botocore.exceptions import ClientError
+
+
 def upload_file_to_s3(s3_client, file_name, object_name):
     """Upload a file to an S3 bucket
 
@@ -19,3 +22,14 @@ def upload_file_to_s3(s3_client, file_name, object_name):
     except ClientError as e:
         print('Unexpected error at the moment of upload to S3: ', e)
         return False
+
+
+def send_message_to_sqs(client_sqs, message, url_sqs):
+    try:
+        response = client_sqs.send_message(
+        QueueUrl=url_sqs,
+        MessageBody=json.dumps(message),
+        )
+        print("Uploaded to SQS successfully",response)
+    except Exception as e:
+        print("Unexpected error with SQS, details:" + e)
