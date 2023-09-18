@@ -1,23 +1,33 @@
 import json
 from database import Connection
 from config import Configuration
-from test_data import data_update_2
+from helpers import send_to_generate_medical_formula
 """ Configuration """
 
 config = Configuration()
 variables = config.assign_variable_environments(False)
 connection = Connection(variables, True)
 
+
 def lambda_handler(event, context):
+    print(event)
     try:
-        id_of_user_to_update = event['multiValueQueryStringParameters']['user'][0]
-        new_diagnosis = event['body']['diagnosis'][0]
+        id_of_user_to_update = event['queryStringParameters']['user']
+        body = json.loads(event['body'].replace("\\", ""))
+        print(body)
+        new_diagnosis = body['diagnosis']
         new_treatment = None
         try:
-            new_treatment = event['body']['treatments'][0]
+            new_treatment = body['treatments']
+            print(new_treatment)
         except IndexError as e:
             print(f"Treatment without meds")
-        connection.update_with_treatment_plan(id_of_user_to_update, new_diagnosis, new_treatment)
+        user_updated = connection.update_with_treatment_plan(
+            id_of_user_to_update, new_diagnosis, new_treatment)
+        print("User",  user_updated)
+        if body['generateMedicalFormula']:
+            send_to_generate_medical_formula(
+                patient=connection.get_emr_user(id)['patient']['name'], medicine=new_treatment, notes=body['adittionalNotes'], pharmacy=body['pharmacy'])
         return {
             "statusCode": 200,
             "headers": {
@@ -32,7 +42,5 @@ def lambda_handler(event, context):
             "headers": {
                 "Content-Type": "application/json"
             },
-            "body": json.dumps("Unexpected error, please contact the administrator")
+            "body": json.dumps(f"Unexpected error {e}")
         }
-
-print(lambda_handler(data_update_2, None))

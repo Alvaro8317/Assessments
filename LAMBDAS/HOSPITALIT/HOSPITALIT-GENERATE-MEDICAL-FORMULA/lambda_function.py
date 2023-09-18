@@ -27,25 +27,25 @@ def lambda_handler(event, context):
         </style>
     </head>
     <body>
-    <h1>Receta Médica</h1>
-    
-    <div class="patient-info">
-        <p>Nombre del Paciente: <strong>{}</strong></p>
-        <p>EPS: <strong>HOSPITALITO</strong></p>
-        <p>Fecha: <strong>{}</strong></p>
-    </div>
-    
-    <h2>Medicamentos Recetados</h2>
-    <div class="medicine-list">
-        <ul>
-            {}
-        </ul>
-    </div>
-    
-    <h3>Notas del Médico</h3>
-    <div class="doctor-notes">
-        <p>{}</p>
-    </div>
+      <h1>Receta Médica</h1>
+      
+      <div class="patient-info">
+          <p>Nombre del Paciente: <strong>{}</strong></p>
+          <p>EPS: <strong>HOSPITALITO</strong></p>
+          <p>Fecha: <strong>{}</strong></p>
+      </div>
+      
+      <h2>Medicamentos Recetados</h2>
+      <div class="medicine-list">
+          <ul>
+              {}
+          </ul>
+      </div>
+      
+      <h3>Notas del Médico</h3>
+      <div class="doctor-notes">
+          <p>{}</p>
+      </div>
     </body>
     </html>
     """.format(styles, patient, today, format_medicines, notes)
@@ -63,23 +63,19 @@ def lambda_handler(event, context):
         print('Sending to pharmacy')
         pharmacy = event['body']['nameOfPharmacy']
         payload_to_pharmacy = {
-            "INFO": f"The patient {patient} received a new medical formula, please prepare his respective medical formula"
+            "INFO": f"The patient {patient} received a new medical formula, please prepare his respective medical formula",
+            "patient": patient,
+            "URL": str(encode_url(encrypt_url(client_boto3=kms_client, url=url)))
         }
-        payload_sqs = {
-            "Name": patient,
-            "URL": encode_url(encrypt_url(client_boto3=kms_client, url=url))
-        }
+        print(payload_to_pharmacy)
         sended_to_a_pharmacy = False
         message_from_pharmacy = "Doesn't exist that pharmacy"
-        url_queue = None
         match pharmacy:
             case Pharmacies.SALUDPLUS.name:
-                url_queue = "https://sqs.us-east-1.amazonaws.com/648254270796/SALUDPLUS"
                 print("Sending information to saludplus")
                 message_from_pharmacy = requests.post(
-                    Pharmacies.SALUDPLUS.value, payload_to_pharmacy)
+                    Pharmacies.SALUDPLUS.value, json=payload_to_pharmacy)
                 sended_to_a_pharmacy = True
-                send_message_to_sqs(client_sqs=sqs_client, message=payload_sqs, url_sqs=url_queue)
             case Pharmacies.VITALCARE:
                 pass
             case Pharmacies.BIENESTARTOTAL:
