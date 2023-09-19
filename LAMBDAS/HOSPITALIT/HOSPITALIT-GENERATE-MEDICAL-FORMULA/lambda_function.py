@@ -12,6 +12,7 @@ def lambda_handler(event, context):
     patient = event['body']['name_patient']
     medicines = event['body']['medicines']
     notes = event['body']['additionalNotes']
+    email = event['body']['email']
     today = date.today()
     format_medicines = convert_medicines(medicines)
 
@@ -65,7 +66,8 @@ def lambda_handler(event, context):
         payload_to_pharmacy = {
             "INFO": f"The patient {patient} received a new medical formula, please prepare his respective medical formula",
             "patient": patient,
-            "URL": str(encode_url(encrypt_url(client_boto3=kms_client, url=url)))
+            "email": email,
+            "URL": encode_url(encrypt_url(client_boto3=kms_client, url=url))
         }
         print(payload_to_pharmacy)
         sended_to_a_pharmacy = False

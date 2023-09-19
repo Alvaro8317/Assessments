@@ -1,7 +1,7 @@
 import json
 import base64
 import boto3
-
+from datetime import datetime
 client_kms = boto3.client('kms', region_name='us-east-1')
 client_sns = boto3.client('sns')
 client_sqs = boto3.client('sqs')
@@ -20,10 +20,14 @@ def decrypt_url(url_in_binary: bytes):
 
 
 def lambda_handler(event, context):
+    print(event)
     body = json.loads(event['body'])
+    print(body['URL'])
     cipher_url = decode_url(body['URL'])
     decrypted_url = cipher_url['Plaintext'].decode('utf-8')
     patient = body['patient']
+    email = body['email']
+    now = datetime.now()
     message_of_sns = """Estimado equipo de SALUDPLUS,
     
     Nos complace anunciar que hemos recibido una nueva fórmula médica que mejorará nuestros tratamientos. Encontrarán la fórmula médica del paciente {} en el siguiente enlace: {}. Ha quedado en la lista de espera para medicamentos que no han sido preparados aún.
@@ -31,7 +35,8 @@ def lambda_handler(event, context):
     Si desean obtener más información o tienen alguna pregunta, no duden en ponerse en contacto con nuestro equipo médico o el departamento de recursos humanos.
     Gracias por su compromiso con la excelencia en la atención médica que ofrecemos en SALUDPLUS. Continuaremos trabajando juntos para proporcionar a nuestros pacientes el mejor cuidado posible.
     """.format(patient, decrypted_url)
-    message_of_sqs = json.dumps({"Patient": patient, "URL": decrypted_url})
+    message_of_sqs = json.dumps(
+        {"Patient": patient, "URL": decrypted_url, "Email": email, "DatetimeReceived": now.strftime("%d/%m/%Y %H:%M:%S")})
     bad_response = {
         'statusCode': 500,
         'body': {"message": "Something went wrong, please try again later"}

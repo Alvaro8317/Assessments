@@ -22,12 +22,13 @@ def lambda_handler(event, context):
             print(new_treatment)
         except IndexError as e:
             print(f"Treatment without meds")
-        user_updated = connection.update_with_treatment_plan(
+        connection.update_with_treatment_plan(
             id_of_user_to_update, new_diagnosis, new_treatment)
-        print("User",  user_updated)
+        complete_patient = connection.get_emr_user(id)['patient']
+        print("Getting information of this user:", complete_patient)
         if body['generateMedicalFormula']:
             send_to_generate_medical_formula(
-                patient=connection.get_emr_user(id)['patient']['name'], medicine=new_treatment, notes=body['adittionalNotes'], pharmacy=body['pharmacy'])
+                patient=complete_patient['name'], email=complete_patient['contact_info']['email'], medicine=new_treatment, notes=body['adittionalNotes'], pharmacy=body['pharmacy'])
         return {
             "statusCode": 200,
             "headers": {
