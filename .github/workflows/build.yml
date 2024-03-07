@@ -1,8 +1,6 @@
 name: PipelineBuildSam
 run-name: RunName - Build with AWS SAM
 on: [push, pull_request]
-env:
-  VARIABLE_ENTORNO_WORKFLOW: 'Hola! Soy un env de workflow'
 jobs:
   make-build-and-deploy-in-aws:
     runs-on: ubuntu-latest
@@ -13,6 +11,10 @@ jobs:
         uses: aws-actions/setup-sam@v2
       - name: Third step - Shows the SAM version
         run: sam --version
+      - name: Third dot five step - Shows the SAM version
+        run: pwd
+      - name: Third dot five step - Shows the SAM version
+        run: ll
       - name: Fourth step - Goes to the assessment of 2024-1
         run: cd 2024-1/
       - name: Fifth step - Build the template
