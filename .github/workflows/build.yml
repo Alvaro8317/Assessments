@@ -14,9 +14,11 @@ jobs:
       - name: Third dot five step - Shows the SAM version
         run: pwd
       - name: Third dot five step - Shows the SAM version
-        run: ll
+        run: ls -al
       - name: Fourth step - Goes to the assessment of 2024-1
         run: cd 2024-1/
+      - name: Third dot five step - Shows the SAM version
+        run: ls -al
       - name: Fifth step - Build the template
         run: sam build --use-container
       - name: Sixth step - Shows everything is OK!
