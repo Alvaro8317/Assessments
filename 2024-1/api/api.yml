@@ -1,0 +1,144 @@
+openapi: 3.0.0
+info:
+  title: Pragma assessment 2024-1
+  description: Pragma assessment 2024-1
+  version: 1.0.0
+tags:
+  - name: "api-gateway"
+    description: "API assessment"
+paths:
+  /core/v1/client:
+    post:
+      operationId: "Client"
+      summary: "La funcionalidad de este microservicio es la creación de un nuevo cliente"
+      description: "Realiza una conexión a la base de datos NoSQL, realiza una validación y luego una inserción sobre esta"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: "User created successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        "409":
+          description: "User registered already"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailedCreateUserResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        credentials:
+          Fn::Sub:
+            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_GATEWAY
+            - AWSAccountId:
+                Ref: AWS::AccountId
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_USER/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+          - "Authorization"
+        maxAge: 300
+components:
+
+  schemas:
+    CreateUserRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          description: "Identificador de la persona"
+          example: "1016096712"
+        completeName:
+          type: string
+          description: "Format"
+          example: "json"
+        password:
+          type: number
+          description: "Contraseña del usuario"
+          example: "Alvaro2345"
+
+    CreateUserResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: "Indica si el proceso fue exitoso"
+          example: true
+        message:
+          type: string
+          description: "Mensaje de respuesta"
+          example: "Usuario creado exitosamente"
+        details:
+          type: string
+          description: "Detalle de la creación"
+          example: "Usuario con ID 12345 y nombre Alvaro creado"
+        traceid:
+          type: string
+          description: "Identificador de la transacción"
+          example: "a8a9d8b0-b0b1-c0c2-d0d1-e0e1f2e3f4f5"
+
+    FailedCreateUserResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: "Indica si el proceso fue exitoso"
+          example: false
+        message:
+          type: string
+          description: "Mensaje de respuesta"
+          example: "Usuario ya existe"
+        details:
+          type: string
+          description: "Detalle de la creación"
+          example: "Se encontró un usuario con el mismo registro, por favor contacte servicio al cliente"
+        traceid:
+          type: string
+          description: "Identificador de la transacción"
+          example: "a8a9d8b0-b0b1-c0c2-d0d1-e0e1f2e3f4f5"

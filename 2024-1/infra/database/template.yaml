@@ -1,0 +1,32 @@
+# Creadas con el modelo "pago por solicitud" para asegurarse de un rendimiento óptimo ya que se cuenta con un número incierto en las solicitudes
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Users
+      AttributeDefinitions:
+        - AttributeName: IdUser
+          AttributeType: S
+      KeySchema:
+        - AttributeName: IdUser
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      ProvisionedThroughput:
+        ReadCapacityUnits: 0
+        WriteCapacityUnits: 0
+  BankServicesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: BankServices
+      AttributeDefinitions:
+        - AttributeName: CodeService
+          AttributeType: N
+      KeySchema:
+        - AttributeName: CodeService
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      ProvisionedThroughput:
+        ReadCapacityUnits: 0
+        WriteCapacityUnits: 0
