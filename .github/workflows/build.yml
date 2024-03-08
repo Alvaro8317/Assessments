@@ -1,5 +1,4 @@
 name: PipelineBuildSam
-run-name: RunName - Build with AWS SAM
 on: [push, pull_request]
 jobs:
   make-build-and-deploy-in-aws:
@@ -7,19 +6,15 @@ jobs:
     steps:
       - name: First step - Make a checkout
         uses: actions/checkout@v4
+
       - name: Second step - Setup SAM environment
         uses: aws-actions/setup-sam@v2
+
       - name: Third step - Shows the SAM version
         run: sam --version
-      - name: Third dot five step - Shows the SAM version
-        run: pwd
-      - name: Third dot five step - Shows the SAM version
-        run: ls -al
-      - name: Fourth step - Goes to the assessment of 2024-1
-        run: cd 2024-1/
-      - name: Third dot five step - Shows the SAM version
-        run: ls -al
-      - name: Fifth step - Build the template
-        run: sam build --use-container
-      - name: Sixth step - Shows everything is OK!
+
+      - name: Fourth step - Change directory to 2024-1 and Build the template
+        run: cd 2024-1/ && sam build --use-container
+
+      - name: Fifth step - Shows everything is OK!
         run: echo "OK!"
