@@ -210,17 +210,3 @@ Resources:
 #     DependsOn:
 #       - NamesApi
 #       - GreetingApi
-
-# Outputs:
-#   NamesApiEndpoint:
-#     Description: Names API URL for application
-#     Value:
-#       Fn::Sub: https://${NamesApi}.execute-api.${AWS::Region}.amazonaws.com/prod/resources/names
-#   GreetingApiEndpoint:
-#     Description: Greeting API URL for application
-#     Value:
-#       Fn::Sub: https://${GreetingApi}.execute-api.${AWS::Region}.amazonaws.com/prod/resources/greeting
-#   WebappApiEndpoint:
-#     Description: WebApp URL for application
-#     Value:
-#       Fn::Sub: https://${WebAppApi}.execute-api.${AWS::Region}.amazonaws.com/prod/
