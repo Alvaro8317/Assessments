@@ -13,8 +13,11 @@ jobs:
       - name: Third step - Shows the SAM version
         run: sam --version
 
-      - name: Fourth step - Change directory to 2024-1 and Build the template
-        run: cd 2024-1/ && sam build --use-container
+      - name: Fourth step - Configure AWS credentials
+        run: aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && aws configure set default.region us-east-1
 
-      - name: Fifth step - Shows everything is OK!
+      - name: Fifth step - Change directory to 2024-1 and Build the template
+        run: cd 2024-1/ && sam build --use-container && sam deploy
+
+      - name: Sixth step - Shows everything is OK!
         run: echo "OK!"
