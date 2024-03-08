@@ -1,4 +1,4 @@
-name: PipelineBuildSam
+name: PipelineBuildAndDeploy
 on: [push, pull_request]
 jobs:
   make-build-and-deploy-in-aws:
@@ -14,7 +14,11 @@ jobs:
         run: sam --version
 
       - name: Fourth step - Configure AWS credentials
-        run: aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && aws configure set default.region us-east-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY}}
+          REGION: us-east-1
+        run: aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && aws configure set default.region $REGION
 
       - name: Fifth step - Change directory to 2024-1 and Build the template
         run: cd 2024-1/ && sam build --use-container && sam deploy
