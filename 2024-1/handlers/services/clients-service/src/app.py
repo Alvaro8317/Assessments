@@ -5,7 +5,7 @@ from aws_lambda_powertools import Logger
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools import Metrics
 from persistence import UserPersistence
-
+from utils import generate_comment_of_ia
 tracer = Tracer()
 logger = Logger()
 metrics = Metrics(namespace="Powertools")
@@ -38,11 +38,19 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
         client.update_user()
         return create_response("User updated successfully")
     if event["operation"] == "validate":
-        exists_user = client.validate_if_exists_user_with_that_id(set_data_of_database_to_instance=True)
+        exists_user = client.validate_if_exists_user_with_that_id(
+            set_data_of_database_to_instance=True
+        )
         if not exists_user:
             return create_response(
                 "The user does not exists already, please create it first"
             )
+
         result_domain_validations = client.validate_profile_of_user()
-        return create_response(result_domain_validations)
+        comments = generate_comment_of_ia(result_domain_validations)
+        message_to_return = {
+            "result_validations": result_domain_validations,
+            "comments": comments,
+        }
+        return create_response(message_to_return)
     return create_response("Operation not supported")

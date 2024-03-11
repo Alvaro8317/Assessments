@@ -29,5 +29,5 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
             },
         ],
     )
-    print(completion)
-    return create_response(completion.choices[0].message)
+    logger.info(completion.choices[0].message)
+    return create_response(completion.choices[0].message.content)

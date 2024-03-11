@@ -1,1 +1,1 @@
-from .ia import UserPersistence
+from .ia import generate_comment_of_ia

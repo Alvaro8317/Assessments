@@ -10,10 +10,13 @@ training = "Eres un asistente bancario que trabaja para AlgBank, a partir de est
 def generate_comment_of_ia(result_validations):
     payload_to_ia: dict = {
         "training": training,
-        "result_validations": result_validations,
+        "result_validation": json.dumps(result_validations),
     }
-    client_lambda.invoke(
+    logger.info(f"Prepared next payload to ia: {payload_to_ia}")
+    response = client_lambda.invoke(
         FunctionName="LAMBDA_PRAGMA_ASSESS_HELPER_IA",
         LogType="Tail",
         Payload=bytes(json.dumps(payload_to_ia), "utf-8"),
     )
+    logger.info(f"Response of the IA: {response}")
+    return response["Payload"].read()
