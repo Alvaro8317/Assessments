@@ -37,12 +37,12 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
             )
         client.update_user()
         return create_response("User updated successfully")
-    if event["operation"] == "validate_profile":
-        exists_user, user = client.validate_if_exists_user_with_that_id(return_item=True)
+    if event["operation"] == "validate":
+        exists_user = client.validate_if_exists_user_with_that_id(set_data_of_database_to_instance=True)
         if not exists_user:
             return create_response(
                 "The user does not exists already, please create it first"
             )
-        client.validate_profile_of_user()
-        return create_response("User updated successfully")
+        result_domain_validations = client.validate_profile_of_user()
+        return create_response(result_domain_validations)
     return create_response("Operation not supported")

@@ -30,6 +30,7 @@ Resources:
           LOG_LEVEL: INFO
       Layers:
       - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:LambdaPowerToolsPython:1
+      - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:DomainServicesLayer:2
       Tags:
         PragmaAssessment: Second
 

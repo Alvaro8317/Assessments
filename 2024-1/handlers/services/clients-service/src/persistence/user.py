@@ -1,6 +1,6 @@
-from typing import Union
 from boto3 import client
 from aws_lambda_powertools import Logger
+from domain_services import DomainValidations
 
 logger = Logger()
 dynamodb_client = client("dynamodb")
@@ -53,7 +53,9 @@ class UserPersistence:
         logger.info(f"Response of user to update: {response_dynamo}")
         return response_dynamo
 
-    def validate_if_exists_user_with_that_id(self, return_item: bool = False) -> bool:
+    def validate_if_exists_user_with_that_id(
+        self, set_data_of_database_to_instance: bool = False
+    ) -> bool:
         response_dynamo = dynamodb_client.get_item(
             TableName=table_name, Key={"IdUser": {"S": str(self.id)}}
         )
@@ -61,14 +63,20 @@ class UserPersistence:
             f"Response of searching the user with ID {self.id}: {response_dynamo}"
         )
         if "Item" in response_dynamo:
-            if not return_item:
+            if not set_data_of_database_to_instance:
                 return True
-            self.complete_name
-            self.incomes
-            self.country
-            self.age
-            return True, response_dynamo["Item"]
+            self.complete_name = response_dynamo["Item"]["CompleteName"]["S"]
+            self.incomes = response_dynamo["Item"]["Income"]["N"]
+            self.country = response_dynamo["Item"]["Country"]["S"]
+            self.age = response_dynamo["Item"]["Age"]["N"]
+            print(self.incomes)
+            return True
         return False
 
     def validate_profile_of_user(self):
-        pass
+        user_data_to_validate: dict = {
+            "country": self.country,
+            "age": int(self.age),
+            "incomes": int(self.incomes),
+        }
+        return DomainValidations.validate_all_products(user_data=user_data_to_validate)
