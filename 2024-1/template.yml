@@ -30,6 +30,11 @@ Resources:
     DependsOn: Roles
     Properties:
       TemplateURL: ./handlers/apis/modify-client-by-comercial/template.yaml
+  GetAvailableProductsService:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: Roles
+    Properties:
+      TemplateURL: ./handlers/apis/get-available-products-by-comercial/template.yaml
   OrchestratorUsers:
     Type: AWS::CloudFormation::Stack
     DependsOn: Roles
