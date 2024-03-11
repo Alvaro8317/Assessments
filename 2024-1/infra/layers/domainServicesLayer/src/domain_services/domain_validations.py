@@ -1,5 +1,5 @@
 from typing import Union
-from .helpers import DataValidators
+from ..helpers import DataValidators
 
 
 class DomainValidations:
@@ -63,3 +63,4 @@ class DomainValidations:
                 main_card_balance=main_card_balance, percentage_to_apply=5
             )
         return False
+ 

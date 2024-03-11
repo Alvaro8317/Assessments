@@ -1,1 +1,1 @@
-from .domain_validations import DomainValidations
+from .domain_services import DomainValidations
