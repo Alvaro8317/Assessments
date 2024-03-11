@@ -17,3 +17,4 @@ create_response = lambda message: {"message": message}
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     if "describe_services" in event:
         return create_response(ProductPersistence.get_available_products())
+    return create_response("Operation not valid")

@@ -1,0 +1,6 @@
+from enum import Enum
+
+
+class Functions(Enum):
+    PRODUCTS = "LAMBDA_PRAGMA_ASSESS_MICRO_PRODUCTS"
+    CLIENTS = "LAMBDA_PRAGMA_ASSESS_MICRO_CLIENTS"
