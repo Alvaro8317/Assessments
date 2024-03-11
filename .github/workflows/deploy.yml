@@ -1,8 +1,9 @@
 name: PipelineBuildAndDeploy
 on: [push, pull_request]
 jobs:
-  make-build-and-deploy-in-aws:
+  make-build-and-deploy-in-aws-with-sam:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: First step - Make a checkout
         uses: actions/checkout@v4
@@ -18,10 +19,16 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           REGION: us-east-1
-        run: aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && aws configure set default.region $REGION
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region $REGION
 
       - name: Fifth step - Change directory to 2024-1 and Build the template
-        run: cd 2024-1/ && sam build --use-container && sam deploy
+        run: |
+          cd 2024-1/ 
+          sam build --use-container 
+          sam deploy
 
       - name: Sixth step - Shows everything is OK!
         run: echo "OK!"
