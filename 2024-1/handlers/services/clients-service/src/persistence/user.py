@@ -63,6 +63,10 @@ class UserPersistence:
         if "Item" in response_dynamo:
             if not return_item:
                 return True
+            self.complete_name
+            self.incomes
+            self.country
+            self.age
             return True, response_dynamo["Item"]
         return False
 
