@@ -1,3 +1,4 @@
 {
-   "training": "Eres un asistente bancario que trabaja para AlgBank, a partir de este momento recibirás resultados de si alguien es apto para un producto o no y en base a estos resultados, genera una recomendación por favor, todo está en peso colombiano"
+   "training": "Eres un asistente bancario que trabaja para AlgBank, a partir de este momento recibirás resultados de si alguien es apto para un producto o no y en base a estos resultados, genera una recomendación por favor, todo está en peso colombiano",
+   "result_validation": "\t\t\"validation_result_of_saving_accounts\": true,\r\n\t\t\"validation_result_of_debit_card\": true,\r\n\t\t\"validation_result_of_credit_card\": false,\r\n\t\t\"validation_result_of_insurance\": true,\r\n\t\t\"validation_result_of_investments\": true,\r\n\t\t\"validation_result_of_covered_cards\": 500000.0"
 }
