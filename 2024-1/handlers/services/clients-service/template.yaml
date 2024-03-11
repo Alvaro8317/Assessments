@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.12
+
+    Tracing: Active
+    LoggingConfig:
+      LogFormat: JSON
+  Api:
+    TracingEnabled: true
+Resources:
+  ClientsMicroService:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: LAMBDA_PRAGMA_ASSESS_MICRO_CLIENTS
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/ROLE_PRAGMA_ASSESSMENT_LAMBDAS
+      Handler: app.lambda_handler
+      CodeUri: src
+      Description: Microservice with the aggregate of clients
+      Architectures:
+        - x86_64
+      Tracing: Active
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: ClientsMicroService
+          POWERTOOLS_METRICS_NAMESPACE: Powertools
+          LOG_LEVEL: INFO
+      Layers:
+      - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:LambdaPowerToolsPython:1
+      Tags:
+        PragmaAssessment: Second
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName: !Ref ApplicationResourceGroup
+      AutoConfigurationEnabled: true
+Outputs:
+  ClientsMicroService:
+    Description: ClientsMicroService Function ARN
+    Value: !GetAtt ClientsMicroService.Arn

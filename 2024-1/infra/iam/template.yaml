@@ -8,7 +8,7 @@ Resources:
   ApiExecutionClientsRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::Region}-ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
+      RoleName: ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:

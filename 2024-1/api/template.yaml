@@ -10,8 +10,6 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Description: API dev of the assessment of Pragma - Second assessment
-      Auth:
-        ApiKeyRequired: true
       StageName: dev
       OpenApiVersion: 3.0.3
       DefinitionBody:
@@ -24,9 +22,9 @@ Resources:
       # AccessLogSetting:
       #   DestinationArn: !GetAtt logGroupApi.Arn
       #   Format: $context.requestId
-  logGroupApi:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupClass: STANDARD
-      LogGroupName: logGroupAssessmentApi
-      RetentionInDays: 30
+  # logGroupApi:
+  #   Type: AWS::Logs::LogGroup
+  #   Properties:
+  #     LogGroupClass: STANDARD
+  #     LogGroupName: logGroupAssessmentApi
+  #     RetentionInDays: 30

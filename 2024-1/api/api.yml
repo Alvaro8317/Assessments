@@ -8,10 +8,10 @@ tags:
     description: "API assessment"
 paths:
   /core/v1/client:
-    post:
-      operationId: "Client"
-      summary: "La funcionalidad de este microservicio es la creación de un nuevo cliente"
-      description: "Realiza una conexión a la base de datos NoSQL, realiza una validación y luego una inserción sobre esta"
+    get:
+      operationId: "GetClient"
+      summary: "La funcionalidad de esta API es la creación de un nuevo cliente"
+      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso contrario, lo crea"
       requestBody:
         content:
           application/json:
@@ -55,7 +55,7 @@ paths:
         httpMethod: POST
         credentials:
           Fn::Sub:
-            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_GATEWAY
+            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
             - AWSAccountId:
                 Ref: AWS::AccountId
         uri:
@@ -82,22 +82,246 @@ paths:
           - POST
         allowHeaders:
           - "Content-Type"
-          - "Authorization"
+        maxAge: 300
+    post:
+      operationId: "PostClient"
+      summary: "La funcionalidad de esta API es la creación de un nuevo cliente"
+      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso contrario, lo crea"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: "User created successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        "409":
+          description: "User registered already"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailedCreateUserResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        credentials:
+          Fn::Sub:
+            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
+            - AWSAccountId:
+                Ref: AWS::AccountId
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_USER/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
+  /core/v1/services:
+    get:
+      operationId: "GetServices"
+      summary: "La funcionalidad de esta API es obtener los servicios"
+      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso contrario, lo crea"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: "User created successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        "409":
+          description: "User registered already"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailedCreateUserResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        credentials:
+          Fn::Sub:
+            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
+            - AWSAccountId:
+                Ref: AWS::AccountId
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_USER/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
+    post:
+      operationId: "PostClient"
+      summary: "La funcionalidad de esta API es la creación de un nuevo cliente"
+      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso contrario, lo crea"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: "User created successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        "409":
+          description: "User registered already"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailedCreateUserResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        credentials:
+          Fn::Sub:
+            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
+            - AWSAccountId:
+                Ref: AWS::AccountId
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_USER/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
         maxAge: 300
 components:
-
   schemas:
     CreateUserRequest:
       type: object
       properties:
-        code:
+        id:
           type: string
           description: "Identificador de la persona"
           example: "1016096712"
         completeName:
           type: string
           description: "Format"
-          example: "json"
+          example: "Alvaro Eduardo Garzón Pira"
         password:
           type: number
           description: "Contraseña del usuario"
