@@ -142,6 +142,66 @@ paths:
         allowHeaders:
           - "Content-Type"
         maxAge: 300
+  /core/v1/client/validate-profile:
+    post:
+      operationId: "PostClientValidateProfile"
+      summary: "La funcionalidad de esta API es la generación de un informe con los productos en base al perfil del cliente"
+      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso contrario, pide crearlo"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateProfileRequest"
+      responses:
+        "200":
+          description: "User created successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidateProfileResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        credentials:
+          Fn::Sub:
+            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
+            - AWSAccountId:
+                Ref: AWS::AccountId
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_API_GET_AVAILABLE_PRODUCTS/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
 
   /core/v1/products:
     get:
@@ -272,6 +332,51 @@ components:
           type: string
           description: "Mensaje de si es exitosa la operación o no"
           example: "User updated successfully"
+
+    ValidateProfileRequest:
+      type: object
+      properties:
+        code:
+          type: number
+          description: "Identifier of the cliente"
+          example: 123
+    ValidateProfileResponse:
+      type: object
+      properties:
+        body:
+          type: object
+          properties:
+            comments:
+              type: string
+              description: Recomendation of the IA
+              example: "Es un buen perfil"
+            result_validations:
+              type: object
+              properties:
+                validation_result_of_saving_accounts:
+                  type: boolean
+                  description: Result of validation_result_of_saving_accounts
+                  example: True
+                validation_result_of_debit_card:
+                  type: boolean
+                  description: Result of validation_result_of_debit_card
+                  example: True
+                validation_result_of_credit_card:
+                  type: boolean
+                  description: Result of validation_result_of_credit_card
+                  example: True
+                validation_result_of_insurance:
+                  type: boolean
+                  description: Result of validation_result_of_insurance
+                  example: True
+                validation_result_of_investments:
+                  type: boolean
+                  description: Result of validation_result_of_investments
+                  example: True
+                validation_result_of_covered_cards:
+                  type: boolean
+                  description: Result of validation_result_of_covered_cards
+                  example: True
 
     DescribeProductsResponse:
       type: object
