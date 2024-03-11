@@ -248,7 +248,6 @@ pyrightconfig.json
 
 ### SAM+config Patch ###
 # SAM config - exclude this file if sharing publicly
-samconfig.toml
 
 ### Windows ###
 # Windows thumbnail cache files
