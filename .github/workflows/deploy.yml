@@ -6,10 +6,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: First step - Make a checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Second step - Setup SAM environment
-        uses: aws-actions/setup-sam@v2
+        uses: aws-actions/setup-sam@c6696d35f45207ec9622ec3235f1997c660e1ab2
 
       - name: Third step - Shows the SAM version
         run: sam --version
