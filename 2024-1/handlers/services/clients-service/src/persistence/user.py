@@ -69,7 +69,6 @@ class UserPersistence:
             self.incomes = response_dynamo["Item"]["Income"]["N"]
             self.country = response_dynamo["Item"]["Country"]["S"]
             self.age = response_dynamo["Item"]["Age"]["N"]
-            print(self.incomes)
             return True
         return False
 
