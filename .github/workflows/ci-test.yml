@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: First step - Make a checkout
-        uses: actions/checkout@b4ffde6
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Second step - Setup Pytest environment and execute unit tests of domain layer
         run: |
