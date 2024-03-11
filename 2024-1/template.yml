@@ -10,6 +10,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ./infra/database/template.yaml
+  # APIS
   Api:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -19,6 +20,16 @@ Resources:
     DependsOn: Roles
     Properties:
       TemplateURL: ./handlers/apis/describe-services/template.yaml
+  AutoRegisterClientService:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: Roles
+    Properties:
+      TemplateURL: ./handlers/apis/register-client/template.yaml
+  ModifyClientService:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: Roles
+    Properties:
+      TemplateURL: ./handlers/apis/modify-client-by-comercial/template.yaml
   OrchestratorUsers:
     Type: AWS::CloudFormation::Stack
     DependsOn: Roles

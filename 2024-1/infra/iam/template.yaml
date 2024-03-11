@@ -9,6 +9,8 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -26,8 +28,9 @@ Resources:
               - Action: lambda:InvokeFunction
                 Effect: Allow
                 Resource:
-                  - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_USER
-                  - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_MODIFY_USER
+                  - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_API_DESCRIBE_BANK_SERVICES
+                  - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_API_REGISTER_CLIENT
+                  - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_API_MODIFY_CLIENT
   LambdaRole:
     Type: AWS::IAM::Role
     Properties:

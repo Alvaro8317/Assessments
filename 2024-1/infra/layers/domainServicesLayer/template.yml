@@ -2,10 +2,10 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
-  LambdaPowerToolsPython:
+  DomainServicesLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: DomainServicesLambda
+      LayerName: DomainServicesLayer
       Description: Library of the domain - Domain Driven Design
       ContentUri: .
       CompatibleRuntimes:

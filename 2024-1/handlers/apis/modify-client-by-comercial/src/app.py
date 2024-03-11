@@ -21,9 +21,16 @@ client_lambda = client("lambda")
 @tracer.capture_lambda_handler
 @metrics.log_metrics(capture_cold_start_metric=True)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
+    body = json.loads(event["body"])
     payload_to_orchestrator: dict = {
-        "products_service": True,
-        "describe_services": True,
+        "client_service": True,
+        "id": str(body["code"]),
+        "complete_name": f"{body["name"]} {body["lastName"]}",
+        "city": body["city"],
+        "age": body["age"],
+        "country": body["country"],
+        "incomes": body["incomes"],
+        "operation": "update"
     }
     logger.info("Making execution to orchestrator")
     response_of_orchestrator: dict = client_lambda.invoke(

@@ -12,7 +12,6 @@ Globals:
         DataTraceEnabled: True
         LoggingLevel: INFO
         MetricsEnabled: True
-
 Resources:
   assessmentApi:
     Type: AWS::Serverless::Api
@@ -27,3 +26,13 @@ Resources:
             Location: "./api.yml"
       EndpointConfiguration:
         Type: REGIONAL
+      AccessLogSetting:
+        DestinationArn: !GetAtt LogGroupAPI.Arn
+        Format: $context.extendedRequestId $context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId
+  LogGroupAPI:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join
+        - "-"
+        - - !Ref assessmentApi
+          - access-logs

@@ -41,19 +41,19 @@ class UserPersistence:
         response_dynamo = dynamodb_client.update_item(
             TableName=table_name,
             Key={"IdUser": {"S": str(self.id)}},
-            UpdateExpression="SET CompleteName = :n, Income = :i, Country = :c, City = :i, Age = :a",
+            UpdateExpression="SET CompleteName = :n, Income = :s, Country = :c, City = :i, Age = :a",
             ExpressionAttributeValues={
                 ":n": {"S": self.complete_name},
-                ":i": {"S": self.incomes},
+                ":s": {"N": self.incomes},
                 ":c": {"S": self.country},
                 ":i": {"S": self.city},
-                ":a": {"S": self.age},
+                ":a": {"N": self.age},
             },
         )
         logger.info(f"Response of user to update: {response_dynamo}")
         return response_dynamo
 
-    def validate_if_exists_user_with_that_id(self) -> bool:
+    def validate_if_exists_user_with_that_id(self, return_item: bool = False) -> bool:
         response_dynamo = dynamodb_client.get_item(
             TableName=table_name, Key={"IdUser": {"S": str(self.id)}}
         )
@@ -61,5 +61,10 @@ class UserPersistence:
             f"Response of searching the user with ID {self.id}: {response_dynamo}"
         )
         if "Item" in response_dynamo:
-            return True
+            if not return_item:
+                return True
+            return True, response_dynamo["Item"]
         return False
+
+    def validate_profile_of_user(self):
+        pass

@@ -7,11 +7,11 @@ tags:
   - name: "api-gateway"
     description: "API assessment"
 paths:
-  /core/v1/client:
+  /core/v1/client/auto-register:
     post:
-      operationId: "PostClient"
-      summary: "La funcionalidad de esta API es la creación de un nuevo cliente"
-      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso contrario, lo crea"
+      operationId: "PostClientAutoRegister"
+      summary: "La funcionalidad de esta API es la creación de un nuevo cliente por autoservicio"
+      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso contrario, lo crea, esto aplicando una capa de integración que redirecciona al microservicio correspondiente"
       requestBody:
         content:
           application/json:
@@ -60,7 +60,7 @@ paths:
                 Ref: AWS::AccountId
         uri:
           Fn::Sub:
-            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_USER/invocations
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_API_REGISTER_CLIENT/invocations
             - AWSPartition:
                 Ref: AWS::Partition
               AWSRegion:
@@ -83,11 +83,16 @@ paths:
         allowHeaders:
           - "Content-Type"
         maxAge: 300
-  /core/v1/products:
-    get:
-      operationId: "GetProducts"
-      summary: "La funcionalidad de esta API es obtener los productos ofrecidos por el banco"
-      description: "Se envía la comunicación síncrona al microservicio de productos por medio de un orquestador que actúa como capa de integración y redirecciona al microservicio correspondiente"
+  /core/v1/client/modify:
+    patch:
+      operationId: "PatchClientByComercial"
+      summary: "La funcionalidad de esta API es la modificación de un nuevo cliente por parte del comercial que lo atiende"
+      description: "Se envía la comunicación síncrona al microservicio de clientes donde valida si el usuario ya existe y en caso de ya existir, lo modifica, en caso contrario, solicita su creación por el endpoint de auto-register"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModifyUserRequest"
       responses:
         "201":
           description: "User created successfully"
@@ -104,9 +109,48 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CreateUserResponse"
-        "409":
-          description: "User registered already"
+                $ref: "#/components/schemas/ModifyUserResponse"
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        credentials:
+          Fn::Sub:
+            - arn:aws:iam::${AWSAccountId}:role/ROLE_PRAGMA_ASSESSMENT_API_CLIENTS
+            - AWSAccountId:
+                Ref: AWS::AccountId
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_API_MODIFY_CLIENT/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
+
+  /core/v1/products:
+    get:
+      operationId: "GetProducts"
+      summary: "La funcionalidad de esta API es obtener los productos ofrecidos por el banco"
+      description: "Se envía la comunicación síncrona al microservicio de productos por medio de un orquestador que actúa como capa de integración y redirecciona al microservicio correspondiente"
+      responses:
+        "200":
+          description: "Products available of the bank"
           headers:
             Access-Control-Allow-Origin:
               schema:
@@ -120,7 +164,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FailedCreateUserResponse"
+                $ref: "#/components/schemas/DescribeProductsResponse"
 
       x-amazon-apigateway-integration:
         httpMethod: POST
@@ -159,55 +203,95 @@ components:
     CreateUserRequest:
       type: object
       properties:
-        id:
-          type: string
-          description: "Identificador de la persona"
-          example: "1016096712"
-        completeName:
-          type: string
-          description: "Format"
-          example: "Alvaro Eduardo Garzón Pira"
-        password:
+        code:
           type: number
-          description: "Contraseña del usuario"
+          description: "Identifier of the cliente"
+          example: 12345
+        name:
+          type: string
+          description: "First name of the client"
+          example: "Alvaro"
+        lastName:
+          type: string
+          description: "Last name of the client"
+          example: "Garzón"
+        password:
+          type: string
+          description: "Password of the client"
           example: "Alvaro2345"
-
     CreateUserResponse:
       type: object
       properties:
-        success:
-          type: boolean
-          description: "Indica si el proceso fue exitoso"
-          example: true
         message:
           type: string
-          description: "Mensaje de respuesta"
-          example: "Usuario creado exitosamente"
-        details:
-          type: string
-          description: "Detalle de la creación"
-          example: "Usuario con ID 12345 y nombre Alvaro creado"
-        traceid:
-          type: string
-          description: "Identificador de la transacción"
-          example: "a8a9d8b0-b0b1-c0c2-d0d1-e0e1f2e3f4f5"
-
+          description: "Mensaje de si es exitosa la operación o no"
+          example: "User registered successfully"
     FailedCreateUserResponse:
       type: object
       properties:
-        success:
-          type: boolean
-          description: "Indica si el proceso fue exitoso"
-          example: false
         message:
           type: string
-          description: "Mensaje de respuesta"
-          example: "Usuario ya existe"
-        details:
+          description: "Mensaje del error"
+          example: "User exists already"
+
+    ModifyUserRequest:
+      type: object
+      properties:
+        code:
+          type: number
+          description: "Identifier of the cliente"
+          example: 12345
+        name:
           type: string
-          description: "Detalle de la creación"
-          example: "Se encontró un usuario con el mismo registro, por favor contacte servicio al cliente"
-        traceid:
+          description: "First name of the client"
+          example: "Alvaro"
+        lastName:
           type: string
-          description: "Identificador de la transacción"
-          example: "a8a9d8b0-b0b1-c0c2-d0d1-e0e1f2e3f4f5"
+          description: "Last name of the client"
+          example: "Garzón"
+        city:
+          type: string
+          description: "City of the client"
+          example: "Bogotá"
+        age:
+          type: number
+          description: "age of the client"
+          example: 26
+        country:
+          type: string
+          description: "country of the client"
+          example: "Alvaro2345"
+        incomes:
+          type: number
+          description: "incomes of the client"
+          example: 10000000
+    ModifyUserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Mensaje de si es exitosa la operación o no"
+          example: "User updated successfully"
+
+    DescribeProductsResponse:
+      type: object
+      properties:
+        message:
+          type: array
+          items:
+            type: object
+            properties:
+              CodeService:
+                type: object
+                properties:
+                  N:
+                    type: string
+                    description: Object with the datatype and the code of the product
+                    example: 1
+              NameService:
+                type: object
+                properties:
+                  S:
+                    type: string
+                    description: Object with the datatype and the name of the product
+                    example: "Cuentas de ahorros"

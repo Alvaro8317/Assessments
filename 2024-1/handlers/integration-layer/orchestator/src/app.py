@@ -24,3 +24,10 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
             Payload=bytes(json.dumps(event), "utf-8"),
         )
         return response_of_microservice["Payload"].read()
+    if "client_service" in event:
+        response_of_microservice = client_lambda.invoke(
+            FunctionName=Functions.CLIENTS.value,
+            LogType="Tail",
+            Payload=bytes(json.dumps(event), "utf-8"),
+        )
+        return response_of_microservice["Payload"].read()
