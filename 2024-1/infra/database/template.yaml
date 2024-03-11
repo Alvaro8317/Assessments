@@ -19,7 +19,7 @@ Resources:
   BankServicesTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: BankServices
+      TableName: Products
       AttributeDefinitions:
         - AttributeName: CodeService
           AttributeType: N
