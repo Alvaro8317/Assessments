@@ -1,3 +1,4 @@
+import json
 from boto3 import client
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.logging import correlation_paths
@@ -17,6 +18,9 @@ client_lambda = client("lambda")
 @metrics.log_metrics(capture_cold_start_metric=True)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     if "products_service" in event:
-        response_of_microservice = client.invoke(
-            FunctionName=Functions.PRODUCTS.value, LogType="Tail", Payload=event
+        response_of_microservice = client_lambda.invoke(
+            FunctionName=Functions.PRODUCTS.value,
+            LogType="Tail",
+            Payload=bytes(json.dumps(event), "utf-8"),
         )
+        return response_of_microservice["Payload"].read()

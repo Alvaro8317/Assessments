@@ -1,3 +1,4 @@
+import json
 from boto3 import client
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.logging import correlation_paths
@@ -20,9 +21,10 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
         "products_service": True,
         "describe_services": True,
     }
-    response_of_orchestrator: dict = client.invoke(
+    logger.info("Making execution to orchestrator")
+    response_of_orchestrator: dict = client_lambda.invoke(
         FunctionName="LAMBDA_PRAGMA_ASSESS_ORCHESTRATOR_USERS",
         LogType="Tail",
-        Payload=payload_to_orchestrator,
+        Payload=bytes(json.dumps(payload_to_orchestrator), "utf-8"),
     )
-    return create_response(response_of_orchestrator)
+    return create_response(response_of_orchestrator["Payload"].read())

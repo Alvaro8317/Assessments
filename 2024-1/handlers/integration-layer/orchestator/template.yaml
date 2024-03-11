@@ -15,7 +15,7 @@ Resources:
   OrchestratorUsersLayer:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: LAMBDA_PRAGMA_ASSESS_ORCHESTRATOR_USERS
+      FunctionName: LAMBDA_PRAGMA_ASSESS_ORCHESTRATOR
       Role: !Sub arn:aws:iam::${AWS::AccountId}:role/ROLE_PRAGMA_ASSESSMENT_LAMBDAS
       Handler: app.lambda_handler
       CodeUri: src

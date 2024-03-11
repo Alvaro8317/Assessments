@@ -3,7 +3,15 @@ Description: >-
   seconds-assessment-api
 Transform:
   - AWS::Serverless-2016-10-31
-
+Globals:
+  # Enable Logs
+  Api:
+    MethodSettings:
+      - ResourcePath: "/*"
+        HttpMethod: "*"
+        DataTraceEnabled: True
+        LoggingLevel: INFO
+        MetricsEnabled: True
 
 Resources:
   assessmentApi:
@@ -19,12 +27,3 @@ Resources:
             Location: "./api.yml"
       EndpointConfiguration:
         Type: REGIONAL
-      # AccessLogSetting:
-      #   DestinationArn: !GetAtt logGroupApi.Arn
-      #   Format: $context.requestId
-  # logGroupApi:
-  #   Type: AWS::Logs::LogGroup
-  #   Properties:
-  #     LogGroupClass: STANDARD
-  #     LogGroupName: logGroupAssessmentApi
-  #     RetentionInDays: 30

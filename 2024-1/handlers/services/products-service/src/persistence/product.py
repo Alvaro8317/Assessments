@@ -12,7 +12,7 @@ class ProductPersistence:
         pass
 
     @staticmethod
-    def get_available_products():
+    def get_available_products() -> dict:
         response_with_available_products = dynamodb_client.scan(TableName=table_name)
         logger.info(f"{response_with_available_products}")
         return response_with_available_products["Items"]
