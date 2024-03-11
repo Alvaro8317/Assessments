@@ -25,6 +25,7 @@ Resources:
       Tracing: Active
       Environment:
         Variables:
+          OPENAI_API_KEY: AnAPIKey
           POWERTOOLS_SERVICE_NAME: HelperIA
           POWERTOOLS_METRICS_NAMESPACE: Powertools
           LOG_LEVEL: INFO
