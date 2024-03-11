@@ -35,11 +35,13 @@ Resources:
     DependsOn: Roles
     Properties:
       TemplateURL: ./handlers/apis/get-available-products-by-comercial/template.yaml
+  # Integration
   OrchestratorUsers:
     Type: AWS::CloudFormation::Stack
     DependsOn: Roles
     Properties:
       TemplateURL: ./handlers/integration-layer/orchestator/template.yaml
+  # Microservices
   MicroServiceClients:
     Type: AWS::CloudFormation::Stack
     DependsOn: Roles
@@ -50,3 +52,9 @@ Resources:
     DependsOn: Roles
     Properties:
       TemplateURL: ./handlers/services/products-service/template.yaml
+  # Helpers
+  IAAssistant:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: Roles
+    Properties:
+      TemplateURL: ./infra/ia/template.yaml
