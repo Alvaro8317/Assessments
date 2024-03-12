@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.12
+
+    Tracing: Active
+    LoggingConfig:
+      LogFormat: JSON
+  Api:
+    TracingEnabled: true
+Resources:
+  ProtectSensitiveFieldService:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: LAMBDA_PRAGMA_ASSESS_HELPER_ENCRYPT_SENSITIVE_FIELDS
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/ROLE_PRAGMA_ASSESSMENT_LAMBDAS
+      Handler: app.lambda_handler
+      CodeUri: src
+      Description: Lambda edge to encrypt sensitive fields
+      Architectures:
+        - x86_64
+      Tags:
+        PragmaAssessment: Second
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName: !Ref ApplicationResourceGroup
+      AutoConfigurationEnabled: true
+Outputs:
+  ProtectSensitiveFieldService:
+    Description: ProtectSensitiveFieldService Function ARN
+    Value: !GetAtt ProtectSensitiveFieldService.Arn

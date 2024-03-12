@@ -57,32 +57,22 @@ Resources:
               - Action: dynamodb:*
                 Effect: Allow
                 Resource: "*"
-        
-  # ApiExecutionServicesRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     RoleName: !Sub ${AWS::Region}-ROLE_PRAGMA_ASSESSMENT_API_SERVICES
-  #     AssumeRolePolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal:
-  #             Service:
-  #               - apigateway.amazonaws.com
-  #           Action:
-  #             - "sts:AssumeRole"
-  #     Policies:
-  #       - PolicyName: ApiGwExecutionPolicy
-  #         PolicyDocument:
-  #           Version: "2012-10-17"
-  #           Statement:
-  #             - Action: lambda:InvokeFunction
-  #               Effect: Allow
-  #               Resource:
-  #                 - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_SAVINGS_ACCOUNT
-  #                 - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_DEBIT_CARDS
-  #                 - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_CREDIT_CARDS
-  #                 - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_INSURANCE
-  #                 - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_INVESTMENTS
-  #                 - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_SPINS
-  #                 - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:LAMBDA_PRAGMA_ASSESS_COVERED_CARDS
+  LambdaEdgeFunctionRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+      RoleName: ROLE_PRAGMA_ASSESSMENT_LAMBDA_EDGE
+          Path: "/"
+          ManagedPolicyArns:
+              - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          AssumeRolePolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Sid: "AllowLambdaServiceToAssumeRole"
+                Effect: "Allow"
+                Action: 
+                  - "sts:AssumeRole"
+                Principal:
+                  Service: 
+                    - "lambda.amazonaws.com"
+                    - "edgelambda.amazonaws.com"
