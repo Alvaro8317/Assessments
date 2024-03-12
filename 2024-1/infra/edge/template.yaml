@@ -28,7 +28,7 @@ Resources:
           TargetOriginId: OriginEncryptRequest
           LambdaFunctionAssociations:
             - EventType: origin-request
-              LambdaFunctionARN: !Ref ProtectSensitiveFieldService.Arn
+              LambdaFunctionARN: !Ref ProtectSensitiveFieldService.Version
           ForwardedValues:
             QueryString: False
             Headers:
