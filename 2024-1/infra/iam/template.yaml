@@ -58,21 +58,20 @@ Resources:
                 Effect: Allow
                 Resource: "*"
   LambdaEdgeFunctionRole:
-      Type: "AWS::IAM::Role"
-      Properties:
+    Type: "AWS::IAM::Role"
+    Properties:
       RoleName: ROLE_PRAGMA_ASSESSMENT_LAMBDA_EDGE
-          Path: "/"
-          ManagedPolicyArns:
-              - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-          AssumeRolePolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              -
-                Sid: "AllowLambdaServiceToAssumeRole"
-                Effect: "Allow"
-                Action: 
-                  - "sts:AssumeRole"
-                Principal:
-                  Service: 
-                    - "lambda.amazonaws.com"
-                    - "edgelambda.amazonaws.com"
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowLambdaServiceToAssumeRole"
+            Effect: "Allow"
+            Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "edgelambda.amazonaws.com"

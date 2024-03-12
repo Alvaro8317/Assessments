@@ -6,6 +6,11 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ./infra/iam/template.yaml
+  CloudFrontAndLambdaEdge:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: Roles
+    Properties:
+      TemplateURL: ./infra/edge/template.yaml
   TablesDynamoDB:
     Type: AWS::CloudFormation::Stack
     Properties:

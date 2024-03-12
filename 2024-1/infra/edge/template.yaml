@@ -12,14 +12,40 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: True
+        Comment: Distribution to encrypt and deliver in edge
+        Origins:
+          - DomainName: jbog05m880.execute-api.us-east-1.amazonaws.com
+            Id: ApiGateway
+            CustomOriginConfig:
+              OriginProtocolPolicy: match-viewer
+              HTTPSPort: 443
+        DefaultCacheBehavior:
+          TargetOriginId: OriginEncryptRequest
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: !Ref ProtectSensitiveFieldService.Arn
+          ForwardedValues:
+            QueryString: False
+            Headers:
+              - Origin
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: allow-all
+
   ProtectSensitiveFieldService:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: LAMBDA_PRAGMA_ASSESS_HELPER_ENCRYPT_SENSITIVE_FIELDS
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/ROLE_PRAGMA_ASSESSMENT_LAMBDAS
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/ROLE_PRAGMA_ASSESSMENT_LAMBDA_EDGE
       Handler: app.lambda_handler
       CodeUri: src
       Description: Lambda edge to encrypt sensitive fields
+      AutoPublishAlias: edge
       Architectures:
         - x86_64
       Tags:
