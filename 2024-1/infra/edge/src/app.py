@@ -17,11 +17,26 @@ dQIDAQAB
 RSA_PUBLIC_KEY_OBJ = RSA.importKey(RSA_PUBLIC_KEY)
 RSA_CIPHER_OBJ = PKCS1_OAEP.new(RSA_PUBLIC_KEY_OBJ, Crypto.Hash.SHA256)
 
-# Example sensitive data field names in a JSON object. 
 PII_SENSITIVE_FIELD_NAMES = ["password", "authentication", "pwd"]
 
 CIPHERTEXT_PREFIX = "#01#"
 CIPHERTEXT_SUFFIX = "#10#"
+
+
+# def lambda_handler(event, context):
+#     http_request = event["Records"][0]["cf"]["request"]
+#     body = http_request["body"]
+#     print(body)
+#     mod_body: dict = json.loads(http_request["body"])
+#     if "password" in mod_body:
+#         ciphertext = RSA_CIPHER_OBJ.encrypt(bytes(mod_body["password"], "utf-8"))
+#         ciphertext_b64 = base64.b64encode(ciphertext).decode()
+#         mod_body["password"] = CIPHERTEXT_PREFIX + ciphertext_b64 + CIPHERTEXT_SUFFIX
+#     body["action"] = "replace"
+#     body["encoding"] = "text"
+#     body["data"] = mod_body
+#     return http_request
+
 
 def lambda_handler(event, context):
     http_request = event['Records'][0]['cf']['request']

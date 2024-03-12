@@ -12,31 +12,6 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
-  CloudFrontDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        Enabled: True
-        Comment: Distribution to encrypt and deliver in edge
-        Origins:
-          - DomainName: jbog05m880.execute-api.us-east-1.amazonaws.com
-            Id: ApiGateway
-            CustomOriginConfig:
-              OriginProtocolPolicy: match-viewer
-              HTTPSPort: 443
-        DefaultCacheBehavior:
-          TargetOriginId: OriginEncryptRequest
-          LambdaFunctionAssociations:
-            - EventType: origin-request
-              LambdaFunctionARN: !Ref ProtectSensitiveFieldService.Version
-          ForwardedValues:
-            QueryString: False
-            Headers:
-              - Origin
-            Cookies:
-              Forward: none
-          ViewerProtocolPolicy: allow-all
-
   ProtectSensitiveFieldService:
     Type: AWS::Serverless::Function
     Properties:
