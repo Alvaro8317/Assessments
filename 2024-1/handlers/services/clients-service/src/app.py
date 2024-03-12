@@ -1,4 +1,4 @@
-from typing import Union
+import json
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools import Logger
@@ -48,9 +48,10 @@ def lambda_handler(event: dict, context: LambdaContext) -> dict:
 
         result_domain_validations = client.validate_profile_of_user()
         comments = generate_comment_of_ia(result_domain_validations)
+        comments_in_json = json.loads(comments)
         message_to_return = {
             "result_validations": result_domain_validations,
-            "comments": comments,
+            "comments": comments_in_json["comments_of_ia"],
         }
         return create_response(message_to_return)
     return create_response("Operation not supported")
