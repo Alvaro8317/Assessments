@@ -1,0 +1,308 @@
+openapi: 3.0.0
+info:
+  title: Pragma assessment 2024-1 - Microservicios
+  description: Pragma assessment 2024-1 - Microservicios
+  version: 1.0.0
+paths:
+  /clients-service/register:
+    post:
+      tags:
+        - clients
+      operationId: "CreateClientsMicroService"
+      description: "Con este microservicio es posible realizar 3 operaciones que son la creación de un cliente por medio de autoservicio, actualización de los datos de este por medio de la gestión de un comercial y finalmente la validación de los productos que puede obtener en base a su perfil, obteniendo recomendaciones por parte de la IA"
+      summary: "La funcionalidad de esta petición consiste en crear un cliente"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterClientsServiceRequest"
+      responses:
+        "200":
+          description: "Operation finished successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DefaultResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_MICRO_CLIENTS/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
+  /clients-service/modify:
+    patch:
+      tags:
+        - clients
+      operationId: "ModifyClientsMicroService"
+      description: "Con este microservicio es posible realizar 3 operaciones que son la creación de un cliente por medio de autoservicio, actualización de los datos de este por medio de la gestión de un comercial y finalmente la validación de los productos que puede obtener en base a su perfil, obteniendo recomendaciones por parte de la IA"
+      summary: "La funcionalidad de esta petición consiste en modificar un cliente todos los parámetros a excepción de la contraseña"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModifyClientsServiceRequest"
+      responses:
+        "200":
+          description: "Operation finished successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DefaultResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_MICRO_CLIENTS/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
+  /clients-service/validate:
+    post:
+      tags:
+        - clients
+      operationId: "ValidateClientsMicroService"
+      description: "Con este microservicio es posible realizar 3 operaciones que son la creación de un cliente por medio de autoservicio, actualización de los datos de este por medio de la gestión de un comercial y finalmente la validación de los productos que puede obtener en base a su perfil, obteniendo recomendaciones por parte de la IA"
+      summary: "La funcionalidad de esta petición consiste en validar que productos financieros puede adquirir el cliente"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateClientsServiceRequest"
+      responses:
+        "200":
+          description: "Operation finished successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DefaultResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_MICRO_CLIENTS/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
+  # Products
+  /products-service/:
+    post:
+      tags:
+        - products
+      operationId: "GetAvailableProductsMicroService"
+      description: "Con este microservicio es posible obtener los productos ofrecidos en el portafolio de productos del banco, queda abierto a su extensión para cualquier operación que requiera realizarse por parte de los products"
+      summary: "La funcionalidad de esta petición consiste en validar que productos financieros puede adquirir el cliente"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetProductsServiceRequest"
+      responses:
+        "200":
+          description: "Operation finished successfully"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DefaultResponse"
+
+      x-amazon-apigateway-integration:
+        httpMethod: POST
+        uri:
+          Fn::Sub:
+            - arn:${AWSPartition}:apigateway:${AWSRegion}:lambda:path/2015-03-31/functions/arn:${AWSPartition}:lambda:${AWSRegion}:${AWSAccountId}:function:LAMBDA_PRAGMA_ASSESS_MICRO_CLIENTS/invocations
+            - AWSPartition:
+                Ref: AWS::Partition
+              AWSRegion:
+                Ref: AWS::Region
+              AWSAccountId:
+                Ref: AWS::AccountId
+        type: aws_proxy
+        passthroughBehavior: when_no_match
+        contentHandling: CONVERT_TO_TEXT
+        timeoutInMillis: 29000
+        responses:
+          default:
+            statusCode: "200"
+
+      x-amazon-apigateway-cors:
+        allowOrigins:
+          - "*"
+        allowMethods:
+          - POST
+        allowHeaders:
+          - "Content-Type"
+        maxAge: 300
+components:
+  schemas:
+    RegisterClientsServiceRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Valor id del cliente
+          example: "id"
+        complete_name:
+          type: string
+          description: Valor complete_name del cliente
+          example: "complete_name"
+        password:
+          type: string
+          description: Valor password del cliente
+          example: "password"
+        operation:
+          type: string
+          description: Operación a realizar, permitidas - create, update, o validate
+          example: "create"
+    ModifyClientsServiceRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Valor id del cliente
+          example: "id"
+        complete_name:
+          type: string
+          description: Valor complete_name del cliente
+          example: "complete_name"
+        city:
+          type: string
+          description: Valor city del cliente
+        age:
+          type: string
+          description: Valor age del cliente
+        country:
+          type: string
+          description: Valor country del cliente
+        incomes:
+          type: string
+          description: Valor incomes del cliente
+        operation:
+          type: string
+          description: Operación a realizar, permitidas - create, update, o validate
+          example: "update"
+    ValidateClientsServiceRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Valor id del cliente
+          example: "id"
+        operation:
+          type: string
+          description: Operación a realizar, permitidas - create, update, o validate
+          example: "validate"
+    GetProductsServiceRequest:
+      type: object
+      properties:
+        describe_services:
+          type: boolean
+          description: Valido en true o false, solo se requiere que describe_services esté en el payload
+          example: True
+    DefaultResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Mensaje de si es exitosa la operación o no"
+          example: "The user exists already"
